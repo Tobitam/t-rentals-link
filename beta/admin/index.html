@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>T Rentals Admin</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#123524">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="T Admin">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#123524;--green-2:#1b4a33;--soft:#e7efe9;--gold:#C8A24A;--gold-soft:#f5ecd6;--ivory:#FAF8F3;--slate:#5D6670;--ink:#16201b;--line:rgba(18,53,36,.12);--red:#b4473a;--red-soft:#f8e3df;--amber:#8a6a18}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',system-ui,sans-serif;background:var(--ivory);color:var(--ink);font-size:14px;line-height:1.5;padding-bottom:84px}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;color:var(--green);font-weight:700;line-height:1.1}
+.top{background:var(--green);color:var(--ivory);padding:14px 16px calc(14px);position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center}
+.top b{font-family:'Cormorant Garamond',serif;font-size:22px}
+.top small{display:block;font-size:10px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+.wrap{max-width:860px;margin:0 auto;padding:16px}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+.tabs button{border:0;background:none;padding:10px 2px 9px;font-size:11px;font-weight:600;color:var(--slate);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.tabs button span{font-size:18px;line-height:1}
+.tabs button.on{color:var(--green)}
+.tabs .cnt{background:var(--gold);color:var(--green);border-radius:999px;font-size:10px;padding:0 6px;margin-left:2px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}
+.bk{cursor:pointer;transition:box-shadow .2s}
+.bk:hover{box-shadow:0 8px 24px -16px rgba(18,53,36,.5)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.muted{color:var(--slate);font-size:12.5px}
+.badge{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--soft);color:var(--green)}
+.b-hold{background:var(--gold-soft);color:#7a5c12}.b-deposit_pending{background:#fde9c8;color:#8a5a00}.b-confirmed{background:#d9f0e1;color:#1e6a3d}
+.b-new,.b-quote_sent{background:#e3ecf7;color:#22507f}.b-lost,.b-cancelled,.b-expired{background:var(--red-soft);color:var(--red)}.b-completed{background:#eee;color:#555}
+.price{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--green);font-weight:700}
+.btn{border:0;border-radius:999px;padding:10px 16px;font-weight:600;font-size:13px;cursor:pointer;background:var(--soft);color:var(--green);text-decoration:none;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn.g{background:var(--green);color:var(--ivory)}.btn.gold{background:var(--gold);color:var(--green)}.btn.wa{background:#1f9d55;color:#fff}.btn.r{background:var(--red-soft);color:var(--red)}
+.btn:disabled{opacity:.5}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.fld{margin-bottom:10px}.fld label{display:block;font-size:11.5px;font-weight:600;color:var(--slate);margin-bottom:4px}
+.fld input,.fld select,.fld textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 11px;background:var(--ivory)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ln{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.ln.sub{color:var(--slate);padding-left:10px;font-size:12px}
+.alert{background:var(--red-soft);color:var(--red);border-radius:12px;padding:10px 12px;font-size:13px;font-weight:500;margin-bottom:10px}
+.ok{background:#d9f0e1;color:#1e6a3d;border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:10px}
+.av{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.av div{background:var(--soft);border-radius:12px;padding:8px}
+.av b{font-size:20px;display:block;color:var(--green)}
+.av .lim{background:var(--gold-soft)}.av .full{background:var(--red-soft)}.av .full b{color:var(--red)}
+@media(max-width:560px){.av{grid-template-columns:repeat(3,1fr)}}
+.step{display:flex;align-items:center;gap:6px}.step input{width:56px;text-align:center;border:1.5px solid var(--line);border-radius:8px;padding:6px}
+.drawer{position:fixed;inset:0;background:rgba(10,28,19,.55);z-index:50;display:none;justify-content:flex-end}
+.drawer.show{display:flex}
+.panel{background:var(--ivory);width:min(560px,100%);height:100%;overflow:auto;padding:18px 16px 40px;animation:in .25s ease}
+@keyframes in{from{transform:translateX(30px);opacity:.4}}
+.login{max-width:380px;margin:12vh auto;padding:0 16px}
+.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--green);color:var(--ivory);padding:10px 16px;border-radius:999px;font-size:13px;z-index:90;display:none}
+table{width:100%;border-collapse:collapse;font-size:12.5px}td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}th{font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.05em}
+</style>
+</head>
+<body>
+
+<div id="loginView" class="login hidden">
+  <h1 style="font-size:40px">T Rentals</h1>
+  <p class="muted" style="margin-bottom:18px">Team sign-in</p>
+  <div id="loginMsg"></div>
+  <div class="fld"><label>Email</label><input id="lEmail" type="email" autocomplete="email"></div>
+  <div class="fld"><label>Password</label><input id="lPass" type="password" autocomplete="current-password"></div>
+  <div class="btns"><button class="btn g" id="lIn">Sign in</button><button class="btn" id="lUp">First time? Create password</button></div>
+  <p class="muted" style="margin-top:14px">Only emails on the team list can see bookings.</p>
+</div>
+
+<div id="app" class="hidden">
+  <div class="top"><div><b>T Rentals</b><small>Admin</small></div><div class="row"><span class="muted" style="color:rgba(250,248,243,.7)" id="who"></span><button class="btn" style="padding:6px 10px" id="out">Sign out</button></div></div>
+  <div class="wrap" id="view"></div>
+  <nav class="tabs" id="tabs">
+    <button data-t="inbox" class="on"><span>📥</span>Inbox<i class="cnt hidden" id="inCnt"></i></button>
+    <button data-t="day"><span>📅</span>Day</button>
+    <button data-t="new"><span>➕</span>New</button>
+    <button data-t="all"><span>📒</span>All</button>
+    <button data-t="cust"><span>👥</span>Customers</button>
+    <button data-t="set"><span>⚙️</span>Settings</button>
+  </nav>
+</div>
+
+<div class="drawer" id="drawer"><div class="panel" id="panel"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb = supabase.createClient('https://adetofejaikkpqkjjxvc.supabase.co', 'sb_publishable_I_nhrVm3DoxpSmgYdqP1rg_MImHp0WT');
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const gbp = n => n == null ? '–' : '£' + Number(n).toFixed(Number(n) % 1 ? 2 : 0);
+const fdate = d => d ? new Date(d + (d.length === 10 ? 'T12:00' : '')).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : '';
+const STATUS = { new: 'New enquiry', quote_sent: 'Quote sent', hold: 'Tentative hold', deposit_pending: 'Deposit pending', confirmed: 'Confirmed', completed: 'Completed', lost: 'Lost', expired: 'Expired', cancelled: 'Cancelled' };
+const ACTIVE = ['new', 'quote_sent', 'hold', 'deposit_pending', 'confirmed'];
+let ME = { email: '', override: false }, CAT = { items: [], packages: [], zones: [], settings: {} };
+function toast(m) { const t = $('#toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 2600); }
+function fail(e) { toast(e.message || String(e)); console.error(e); }
+const waNum = p => { let d = String(p || '').replace(/\D/g, ''); if (d.startsWith('0')) d = '44' + d.slice(1); return d; };
+const isExpired = b => b.status === 'hold' && b.hold_expires_at && new Date(b.hold_expires_at) < new Date();
+
+// ---------- auth
+async function start() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return showLogin();
+  const { data: staff, error } = await sb.rpc('is_staff');
+  if (error || !staff) { await sb.auth.signOut(); return showLogin('This email is not on the team list. Ask Tam to add you.'); }
+  ME.email = session.user.email;
+  const { data: ov } = await sb.rpc('can_override'); ME.override = !!ov;
+  $('#who').textContent = session.user.email.split('@')[0];
+  $('#loginView').classList.add('hidden'); $('#app').classList.remove('hidden');
+  await loadCat(); go('inbox');
+}
+function showLogin(msg) {
+  $('#app').classList.add('hidden'); $('#loginView').classList.remove('hidden');
+  $('#loginMsg').innerHTML = msg ? `<div class="alert">${esc(msg)}</div>` : '';
+}
+$('#lIn').onclick = async () => {
+  const { error } = await sb.auth.signInWithPassword({ email: $('#lEmail').value.trim(), password: $('#lPass').value });
+  if (error) return showLogin(error.message === 'Email not confirmed' ? 'Check your inbox and tap the confirmation link first.' : error.message);
+  start();
+};
+$('#lUp').onclick = async () => {
+  const email = $('#lEmail').value.trim(), pw = $('#lPass').value;
+  if (pw.length < 8) return showLogin('Choose a password of at least 8 characters, then tap Create.');
+  const { error } = await sb.auth.signUp({ email, password: pw, options: { emailRedirectTo: location.href.split('#')[0] } });
+  if (error) return showLogin(error.message);
+  $('#loginMsg').innerHTML = '<div class="ok">Account created. Check your email and tap the confirmation link, then sign in here.</div>';
+};
+$('#out').onclick = async () => { await sb.auth.signOut(); showLogin(); };
+
+async function loadCat() {
+  const [i, p, pi, z, s] = await Promise.all([sb.from('items').select('*').order('sort'), sb.from('packages').select('*').order('sort'), sb.from('package_items').select('*'), sb.from('zones').select('*').order('sort'), sb.from('settings').select('*')]);
+  CAT = { items: i.data || [], packages: p.data || [], pkgItems: pi.data || [], zones: z.data || [], settings: Object.fromEntries((s.data || []).map(r => [r.key, r.value])) };
+}
+
+// ---------- tabs
+$('#tabs').onclick = e => { const b = e.target.closest('button'); if (b) go(b.dataset.t); };
+function go(t) {
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  ({ inbox, day, new: newBooking, all, cust, set: settings })[t]().catch(fail);
+  window.scrollTo(0, 0);
+}
+const bookingSel = '*, booking_lines(item_code,qty,from_package,line_total)';
+function bkCard(b) {
+  const exp = isExpired(b);
+  const hrs = b.status === 'hold' && !exp ? Math.max(0, Math.round((new Date(b.hold_expires_at) - new Date()) / 36e5)) : null;
+  return `<div class="card bk" onclick="openBk('${b.id}')">
+    <div class="row"><div><b>${esc(b.customer_name || '—')}</b> <span class="muted">${esc(b.ref)} · ${esc(b.source)}</span></div><span class="price">${gbp(b.total)}</span></div>
+    <div class="row" style="margin-top:4px"><span class="muted">📅 ${fdate(b.event_date)} · ${b.fulfilment === 'delivery' ? '🚐 ' + esc((CAT.zones.find(z => z.code === b.zone_code) || {}).name || 'Delivery') : '🏠 Collection'}${b.package_code ? ' · 📦 ' + esc((CAT.packages.find(p => p.code === b.package_code) || {}).name || '') : ''}</span>
+    <span>${exp ? '<span class="badge b-expired">Hold expired</span>' : `<span class="badge b-${b.status}">${STATUS[b.status]}${hrs != null ? ' · ' + hrs + 'h left' : ''}</span>`}</span></div>
+    ${b.deposit_paid ? '<div class="muted" style="margin-top:4px">✅ Deposit paid</div>' : ''}
+  </div>`;
+}
+
+// ---------- inbox
+async function inbox() {
+  $('#view').innerHTML = '<p class="muted">Loading…</p>';
+  const { data, error } = await sb.from('bookings').select(bookingSel).in('status', ['new', 'quote_sent', 'hold', 'deposit_pending']).order('event_date');
+  if (error) throw error;
+  const c = $('#inCnt'); c.textContent = data.length; c.classList.toggle('hidden', !data.length);
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: up } = await sb.from('bookings').select(bookingSel).eq('status', 'confirmed').gte('event_date', today).order('event_date').limit(15);
+  $('#view').innerHTML = `<h2 style="font-size:30px;margin-bottom:10px">Needs action</h2>
+    ${data.length ? data.map(bkCard).join('') : '<div class="card muted">Nothing waiting. 🎉</div>'}
+    <h2 style="font-size:26px;margin:22px 0 10px">Coming up (confirmed)</h2>
+    ${(up || []).length ? up.map(bkCard).join('') : '<div class="card muted">No confirmed bookings ahead.</div>'}`;
+}
+
+// ---------- day view
+async function day(d) {
+  d = d || new Date().toISOString().slice(0, 10);
+  const [{ data: av }, { data: bks }] = await Promise.all([
+    sb.rpc('availability', { p_date: d }),
+    sb.from('bookings').select(bookingSel).lte('event_date', d).in('status', ACTIVE).order('created_at')]);
+  const on = (bks || []).filter(b => d >= b.event_date && d <= (b.hire_end || b.event_date) && !isExpired(b));
+  const jobs = on.filter(b => b.fulfilment === 'delivery').length;
+  const warn = +(CAT.settings.delivery_warn_jobs || 3);
+  $('#view').innerHTML = `<div class="row"><h2 style="font-size:30px">Day view</h2><input type="date" id="dd" value="${d}" style="border:1.5px solid var(--line);border-radius:10px;padding:8px"></div>
+    <div class="av">${(av || []).map(a => { const st = CAT.items.find(i => i.code === a.code)?.stock ?? ''; return `<div class="${a.status === 'full' || a.status === 'out_of_season' ? 'full' : a.status === 'limited' ? 'lim' : ''}"><span class="muted">${esc(a.name.replace(/ 3×6m| folding| trestle/g, ''))}</span><b>${a.available}<span class="muted">/${st}</span></b></div>`; }).join('')}</div>
+    ${jobs > warn ? `<div class="alert">⚠️ ${jobs} delivery jobs on this day (you set ${warn} as the comfortable limit). Plan the route or offer collection.</div>` : `<p class="muted" style="margin-bottom:8px">🚐 ${jobs} delivery job${jobs === 1 ? '' : 's'} on this day</p>`}
+    ${on.length ? on.map(bkCard).join('') : '<div class="card muted">No bookings on this day.</div>'}`;
+  $('#dd').onchange = e => day(e.target.value).catch(fail);
+}
+
+// ---------- all
+async function all(q = '', st = '') {
+  let query = sb.from('booking_profit').select('*').order('event_date', { ascending: false }).limit(300);
+  if (st) query = query.eq('status', st);
+  const { data, error } = await query; if (error) throw error;
+  const rows = data.filter(r => !q || (r.customer_name || '').toLowerCase().includes(q.toLowerCase()) || (r.ref || '').toLowerCase().includes(q.toLowerCase()));
+  const sum = rows.filter(r => ['confirmed', 'completed'].includes(r.status)).reduce((a, r) => ({ rev: a.rev + +r.total, pr: a.pr + +r.profit }), { rev: 0, pr: 0 });
+  $('#view').innerHTML = `<h2 style="font-size:30px;margin-bottom:10px">All bookings</h2>
+    <div class="g2"><div class="fld"><input id="q" placeholder="Search name or ref" value="${esc(q)}"></div>
+    <div class="fld"><select id="st"><option value="">All statuses</option>${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${k === st ? 'selected' : ''}>${v}</option>`).join('')}</select></div></div>
+    <div class="card row"><div><span class="muted">Confirmed + completed revenue</span><div class="price">${gbp(sum.rev)}</div></div><div><span class="muted">Profit after wear &amp; your time</span><div class="price">${gbp(Math.round(sum.pr * 100) / 100)}</div></div></div>
+    <div class="card" style="overflow-x:auto"><table><tr><th>Date</th><th>Ref</th><th>Customer</th><th>Status</th><th>Total</th><th>Profit</th></tr>
+    ${rows.map(r => `<tr style="cursor:pointer" onclick="openBk('${r.id}')"><td>${esc(r.event_date)}</td><td>${esc(r.ref)}</td><td>${esc(r.customer_name)}</td><td><span class="badge b-${r.status}">${STATUS[r.status]}</span></td><td>${gbp(r.total)}</td><td>${gbp(Math.round(r.profit * 100) / 100)}</td></tr>`).join('')}</table></div>
+    <button class="btn" onclick="exportCsv()">⬇️ Download CSV (for the sheet / accountant)</button>`;
+  let t; $('#q').oninput = e => { clearTimeout(t); t = setTimeout(() => all(e.target.value, $('#st').value).catch(fail), 350); };
+  $('#st').onchange = e => all($('#q').value, e.target.value).catch(fail);
+}
+async function exportCsv() {
+  const { data } = await sb.from('bookings').select('ref,legacy_ref,status,source,customer_name,phone,event_type,event_date,fulfilment,zone_code,postcode,package_code,items_subtotal,package_price,discount,delivery_fee,total,deposit,deposit_paid,amount_paid,labour_hours,created_at').order('event_date');
+  const cols = Object.keys(data[0] || { ref: 1 });
+  const csv = [cols.join(','), ...data.map(r => cols.map(c => `"${String(r[c] ?? '').replace(/"/g, '""')}"`).join(','))].join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'trentals-bookings-' + new Date().toISOString().slice(0, 10) + '.csv'; a.click();
+}
+
+// ---------- booking form (new + edit)
+function formHtml(b = {}) {
+  const items = {}; (b.booking_lines || []).filter(l => !l.from_package).forEach(l => items[l.item_code] = l.qty);
+  return `
+  <div class="g2"><div class="fld"><label>Customer name</label><input id="fName" value="${esc(b.customer_name)}"></div>
+  <div class="fld"><label>Mobile</label><input id="fPhone" type="tel" value="${esc(b.phone)}"></div></div>
+  <div class="g2"><div class="fld"><label>Event date</label><input id="fDate" type="date" value="${esc(b.event_date)}"></div>
+  <div class="fld"><label>Source</label><select id="fSrc">${['WhatsApp', 'Facebook', 'Instagram', 'TikTok', 'Referral', 'Church', 'Walk-in', 'Website', 'Other'].map(s => `<option ${s === (b.source || 'WhatsApp') ? 'selected' : ''}>${s}</option>`).join('')}</select></div></div>
+  <div class="fld"><label>Package</label><select id="fPkg"><option value="">None</option>${CAT.packages.map(p => `<option value="${p.code}" ${p.code === b.package_code ? 'selected' : ''}>${esc(p.name)} (£${+p.price})</option>`).join('')}</select></div>
+  <div class="card" style="background:var(--ivory)">${CAT.items.map(i => `<div class="row" style="padding:5px 0"><span>${esc(i.name)} <span class="muted">${esc(i.price_note || '')}</span></span><div class="step"><input type="number" min="0" data-item="${i.code}" value="${items[i.code] || 0}"></div></div>`).join('')}</div>
+  <div class="g2"><div class="fld"><label>Fulfilment</label><select id="fFul"><option value="collection">Collection</option><option value="delivery" ${b.fulfilment === 'delivery' ? 'selected' : ''}>Delivery</option></select></div>
+  <div class="fld"><label>Zone</label><select id="fZone"><option value="">—</option>${CAT.zones.map(z => `<option value="${z.code}" ${z.code === b.zone_code ? 'selected' : ''}>${esc(z.name)}</option>`).join('')}</select></div></div>
+  <div class="fld"><label>Address</label><input id="fAddr" value="${esc(b.address)}"></div>
+  <div class="row" style="justify-content:flex-start;gap:16px;margin-bottom:10px"><label><input type="checkbox" id="fChurch" ${b.church ? 'checked' : ''}> Church 10%</label><label><input type="checkbox" id="fSocial" ${b.social_share ? 'checked' : ''}> Social share £5</label></div>
+  <div id="fQuote" class="card"></div>`;
+}
+function formPayload() {
+  const items = {}; document.querySelectorAll('[data-item]').forEach(i => { const v = parseInt(i.value) || 0; if (v > 0) items[i.dataset.item] = v; });
+  return { name: $('#fName').value, phone: $('#fPhone').value, event_date: $('#fDate').value, source: $('#fSrc').value, package_code: $('#fPkg').value || null, items, fulfilment: $('#fFul').value, zone_code: $('#fZone').value || null, address: $('#fAddr').value, church: $('#fChurch').checked, social_share: $('#fSocial').checked };
+}
+function quoteHtml(q) {
+  let h = q.lines.map(l => `<div class="ln ${l.from_package ? 'sub' : ''}"><span>${l.qty} × ${esc(l.name)}</span><span>${l.from_package ? '' : gbp(l.line_total)}</span></div>`).join('');
+  if (q.package_price) h = `<div class="ln"><span>Package</span><span>${gbp(q.package_price)}</span></div>` + h;
+  h += q.discount_reasons.map(d => `<div class="ln" style="color:#1e6a3d"><span>${esc(d.label)}</span><span>−${gbp(d.amount)}</span></div>`).join('');
+  if (q.fulfilment === 'delivery') h += `<div class="ln"><span>Delivery</span><span>${q.delivery_fee == null ? 'Quote' : gbp(q.delivery_fee)}</span></div>`;
+  h += `<div class="ln" style="border-top:1px dashed var(--line);margin-top:6px;padding-top:8px"><b>Total</b><span class="price">${gbp(q.total)}</span></div><div class="muted">Deposit ${gbp(q.deposit)}</div>`;
+  h += q.errors.map(e => `<div class="alert" style="margin-top:8px">${esc(e)}</div>`).join('') + q.warnings.map(w => `<div class="muted" style="color:var(--amber)">${esc(w)}</div>`).join('');
+  return h;
+}
+function wireQuote(excludeId) {
+  let t; const run = async () => { const p = formPayload(); if (excludeId) p.exclude_booking = excludeId; if (!p.event_date) return; const { data, error } = await sb.rpc('quote', { payload: p }); $('#fQuote').innerHTML = error ? `<div class="alert">${esc(error.message)}</div>` : quoteHtml(data); };
+  document.querySelectorAll('#view input, #view select, #panel input, #panel select').forEach(el => el.addEventListener('input', () => { clearTimeout(t); t = setTimeout(run, 300); }));
+  run();
+}
+async function newBooking() {
+  $('#view').innerHTML = `<h2 style="font-size:30px;margin-bottom:10px">New booking</h2><p class="muted" style="margin-bottom:10px">For WhatsApp, Facebook and phone enquiries. Same prices and rules as the website.</p>${formHtml()}
+    <div class="fld"><label>Status</label><select id="fStatus"><option value="hold">Tentative hold (72h)</option><option value="new">New enquiry (no stock held)</option><option value="quote_sent">Quote sent (no stock held)</option><option value="deposit_pending">Deposit pending</option></select></div>
+    <div class="fld"><label>Notes</label><textarea id="fNotes" rows="2"></textarea></div>
+    <button class="btn g" id="fSave" style="width:100%">Save booking</button>`;
+  wireQuote();
+  $('#fSave').onclick = async () => {
+    const p = { ...formPayload(), status: $('#fStatus').value, notes: $('#fNotes').value };
+    const { data, error } = await sb.rpc('create_booking', { payload: p });
+    if (error) return toast(error.message);
+    toast('Saved ' + data.ref); openBk(data.id);
+  };
+}
+
+// ---------- booking detail
+async function openBk(id) {
+  const { data: b, error } = await sb.from('bookings').select(bookingSel).eq('id', id).single();
+  if (error) return fail(error);
+  if (document.querySelector('#view #fName')) $('#view').innerHTML = '';
+  const pk = CAT.packages.find(p => p.code === b.package_code);
+  const zone = CAT.zones.find(z => z.code === b.zone_code);
+  const lines = (b.booking_lines || []).map(l => `<div class="ln ${l.from_package ? 'sub' : ''}"><span>${l.qty} × ${esc((CAT.items.find(i => i.code === l.item_code) || {}).name || l.item_code)}</span><span>${l.from_package ? '' : gbp(l.line_total)}</span></div>`).join('');
+  const exp = isExpired(b);
+  const st = (s, label, cls = '') => `<button class="btn ${cls}" onclick="setStatus('${b.id}','${s}')">${label}</button>`;
+  const wa = waNum(b.phone);
+  $('#panel').innerHTML = `
+    <div class="row"><button class="btn" onclick="closeBk()">← Back</button><span class="badge b-${exp ? 'expired' : b.status}">${exp ? 'Hold expired' : STATUS[b.status]}</span></div>
+    <h2 style="font-size:32px;margin-top:12px">${esc(b.customer_name)}</h2>
+    <p class="muted">${esc(b.ref)}${b.legacy_ref ? ' · ' + esc(b.legacy_ref) : ''} · ${esc(b.source)} · ${esc(b.event_type || '')}</p>
+    <p style="margin:8px 0">📅 <b>${fdate(b.event_date)}</b>${b.hire_end && b.hire_end !== b.event_date ? ' → ' + fdate(b.hire_end) : ''}<br>
+    ${b.fulfilment === 'delivery' ? `🚐 Delivery · ${esc(zone?.name || '')}<br>📍 ${esc(b.address || '')} ${esc(b.postcode || '')}` : '🏠 Collection from Bamber Bridge'}<br>
+    📞 <a href="tel:${esc(b.phone)}">${esc(b.phone)}</a>${b.email ? ' · ✉️ ' + esc(b.email) : ''}${b.power_available != null && b.booking_lines.some(l => l.item_code === 'heater') ? `<br>🔌 Power near tent: ${b.power_available ? 'yes' : 'not confirmed'}` : ''}</p>
+    ${b.notes ? `<div class="card" style="background:var(--gold-soft)"><b>Customer notes:</b> ${esc(b.notes)}</div>` : ''}
+    <div class="card">${pk ? `<div class="ln"><b>${esc(pk.name)}</b><span>${gbp(b.package_price)}</span></div>` : ''}${lines}
+      ${(b.discount_reasons || []).map(d => `<div class="ln" style="color:#1e6a3d"><span>${esc(d.label)}</span><span>−${gbp(d.amount)}</span></div>`).join('')}
+      ${b.fulfilment === 'delivery' ? `<div class="ln"><span>Delivery</span><span>${b.delivery_fee == null ? 'To quote' : +b.delivery_fee === 0 ? 'Included' : gbp(b.delivery_fee)}</span></div>` : ''}
+      <div class="ln" style="border-top:1px dashed var(--line);margin-top:6px;padding-top:8px"><b>Total</b><span class="price">${gbp(b.total)}</span></div>
+      <div class="ln"><span>Deposit (25%, min £20)</span><b>${gbp(b.deposit)} ${b.deposit_paid ? '✅' : ''}</b></div>
+      ${b.override_reason ? `<div class="muted">Price overridden by ${esc(b.override_by)}: ${esc(b.override_reason)}</div>` : ''}
+    </div>
+
+    <h3 style="font-size:22px;margin:14px 0 8px">Message the customer</h3>
+    <div class="btns">
+      <a class="btn wa" target="_blank" href="https://wa.me/${wa}?text=${encodeURIComponent(msgConfirm(b))}">Quote + deposit details</a>
+      <a class="btn wa" target="_blank" href="https://wa.me/${wa}?text=${encodeURIComponent(msgBooked(b))}">Deposit received</a>
+      <a class="btn wa" target="_blank" href="https://wa.me/${wa}?text=${encodeURIComponent(msgDayBefore(b))}">Day-before</a>
+      <a class="btn wa" target="_blank" href="https://wa.me/${wa}?text=${encodeURIComponent(msgReview(b))}">Ask for review</a>
+    </div>
+
+    <h3 style="font-size:22px;margin:16px 0 8px">Update</h3>
+    <div class="btns">
+      ${!b.deposit_paid ? `<button class="btn gold" onclick="depPaid('${b.id}',true)">💷 Deposit paid</button>` : `<button class="btn" onclick="depPaid('${b.id}',false)">Undo deposit</button>`}
+      ${b.status !== 'confirmed' ? st('confirmed', '✅ Confirm', 'g') : ''}
+      ${b.status !== 'hold' ? st('hold', 'Hold 72h') : exp ? st('hold', 'Renew hold') : ''}
+      ${b.status !== 'deposit_pending' ? st('deposit_pending', 'Deposit pending') : ''}
+      ${st('completed', 'Completed')}
+      ${st('lost', 'Lost', 'r')}${st('cancelled', 'Cancelled', 'r')}
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="g2"><div class="fld"><label>Your hours on this job</label><input id="dHrs" type="number" step="0.25" value="${b.labour_hours ?? ''}" placeholder="e.g. 3"></div>
+      <div class="fld"><label>Amount paid so far (£)</label><input id="dPaid" type="number" step="0.01" value="${b.amount_paid ?? ''}"></div></div>
+      <div class="fld"><label>Team notes</label><textarea id="dNotes" rows="2">${esc(b.staff_notes || '')}</textarea></div>
+      <button class="btn g" onclick="saveDetail('${b.id}')">Save</button>
+    </div>
+
+    <details class="card"><summary style="cursor:pointer;font-weight:600">✏️ Change items / date (re-price)</summary><div style="margin-top:10px">${formHtml(b)}<button class="btn g" onclick="requote('${b.id}')">Re-price &amp; save</button></div></details>
+    ${ME.override ? `<details class="card"><summary style="cursor:pointer;font-weight:600">💷 Override price</summary><div style="margin-top:10px"><p class="muted" style="margin-bottom:8px">Use sparingly. Logged with your name.</p><div class="g2"><div class="fld"><label>New total (£)</label><input id="oTot" type="number" step="0.01"></div><div class="fld"><label>Reason</label><input id="oWhy"></div></div><button class="btn gold" onclick="override('${b.id}')">Apply override</button></div></details>` : ''}
+    <p class="muted" style="margin-top:12px">Created ${new Date(b.created_at).toLocaleString('en-GB')}${b.deposit_paid_at ? ' · deposit marked ' + new Date(b.deposit_paid_at).toLocaleString('en-GB') : ''}</p>`;
+  $('#drawer').classList.add('show');
+  if ($('#panel details')) $('#panel details').addEventListener('toggle', e => { if (e.target.open) wireQuote(b.id); }, { once: true });
+}
+function closeBk() { $('#drawer').classList.remove('show'); const t = document.querySelector('#tabs .on')?.dataset.t; if (t) go(t); }
+$('#drawer').onclick = e => { if (e.target.id === 'drawer') closeBk(); };
+async function setStatus(id, s) { const { error } = await sb.from('bookings').update({ status: s }).eq('id', id); if (error) return toast(error.message); toast(STATUS[s]); openBk(id); }
+async function depPaid(id, v) { const { error } = await sb.from('bookings').update({ deposit_paid: v }).eq('id', id); if (error) return toast(error.message); toast(v ? 'Deposit marked paid' : 'Deposit unmarked'); openBk(id); }
+async function saveDetail(id) {
+  const { error } = await sb.from('bookings').update({ labour_hours: $('#dHrs').value === '' ? null : +$('#dHrs').value, amount_paid: $('#dPaid').value === '' ? null : +$('#dPaid').value, staff_notes: $('#dNotes').value }).eq('id', id);
+  if (error) return toast(error.message); toast('Saved');
+}
+async function requote(id) { const { error } = await sb.rpc('staff_requote', { p_id: id, payload: formPayload() }); if (error) return toast(error.message); toast('Re-priced'); openBk(id); }
+async function override(id) { const { error } = await sb.rpc('staff_override', { p_id: id, p_total: +$('#oTot').value, p_reason: $('#oWhy').value }); if (error) return toast(error.message); toast('Override applied'); openBk(id); }
+
+// ---------- message templates
+const first = b => (b.customer_name || '').split(' ')[0];
+const itemsTxt = b => { const pk = CAT.packages.find(p => p.code === b.package_code); const ex = (b.booking_lines || []).filter(l => !l.from_package).map(l => `${l.qty} × ${(CAT.items.find(i => i.code === l.item_code) || {}).name}`); return [pk ? pk.name : null, ...ex].filter(Boolean).join(', '); };
+const bank = () => String(CAT.settings.bank_details || '').replace(/^"|"$/g, '');
+function msgConfirm(b) { return `Hi ${first(b)}, thanks for booking with T Rentals! 🎉\n\nBooking ${b.ref}\n📅 ${fdate(b.event_date)}\n🪑 ${itemsTxt(b)}\n${b.fulfilment === 'delivery' ? '🚐 Delivery & collection' : '🏠 Collection from Bamber Bridge'}\n💷 Total: ${gbp(b.total)}\n\nTo secure your date, please pay the ${gbp(b.deposit)} deposit (non-refundable) by bank transfer:\n${bank()}\nReference: ${b.ref}\n\nYour items are held for 72 hours. Once the deposit lands, you're confirmed. Balance on the day. Any questions, just reply here 😊`; }
+function msgBooked(b) { return `Hi ${first(b)}, deposit received, thank you! ✅ Booking ${b.ref} for ${fdate(b.event_date)} is confirmed. Balance due on the day: ${gbp(b.total - b.deposit)}. I'll message the day before to confirm timings. — Tam, T Rentals`; }
+function msgDayBefore(b) { return `Hi ${first(b)}, just checking in before tomorrow's event (${b.ref}). ${b.fulfilment === 'delivery' ? `I'll be with you at [time] at ${b.address || 'your address'}. Is there clear access?` : 'What time are you collecting from Bamber Bridge?'} Can't wait for your event! — Tam, T Rentals`; }
+function msgReview(b) { return `Hi ${first(b)}, hope the event was amazing! 🎉 If you were happy with T Rentals, a quick Google or Facebook review would really help our small business: [review link]. Tag us @t_rentals in your photos and get £5 off your next booking. Thank you! — Tam`; }
+
+// ---------- customers
+async function cust() {
+  const { data, error } = await sb.from('customers').select('*').order('created_at', { ascending: false }).limit(500); if (error) throw error;
+  $('#view').innerHTML = `<h2 style="font-size:30px;margin-bottom:6px">Customers</h2>
+    <p class="muted" style="margin-bottom:10px">Customers marked <b>returning</b> get 10% off automatically on the website when they use the same mobile number.</p>
+    <div class="card"><div class="fld"><label>Add returning customers (one per line: Name, mobile)</label><textarea id="bulk" rows="4" placeholder="Sadia, 07700 900111&#10;Adetutu, 07700 900222"></textarea></div><button class="btn g" id="bulkGo">Add as returning</button></div>
+    <div class="card" style="overflow-x:auto"><table><tr><th>Name</th><th>Mobile</th><th>Returning</th></tr>
+    ${data.map(c => `<tr><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td><input type="checkbox" ${c.is_returning ? 'checked' : ''} onchange="setRet('${c.id}',this.checked)"></td></tr>`).join('')}</table></div>`;
+  $('#bulkGo').onclick = async () => {
+    const rows = $('#bulk').value.split('\n').map(l => l.split(/[,\t]/)).filter(p => p.length >= 2 && p[1].replace(/\D/g, '').length >= 10)
+      .map(([n, p]) => { let d = p.replace(/\D/g, ''); if (d.startsWith('44')) d = '0' + d.slice(2); return { name: n.trim(), phone: p.trim(), phone_norm: d, is_returning: true }; });
+    if (!rows.length) return toast('Use: Name, mobile (one per line)');
+    const { error } = await sb.from('customers').upsert(rows, { onConflict: 'phone_norm' }); if (error) return toast(error.message);
+    toast(rows.length + ' customers saved'); cust();
+  };
+}
+async function setRet(id, v) { const { error } = await sb.from('customers').update({ is_returning: v }).eq('id', id); toast(error ? error.message : v ? 'Marked returning' : 'Unmarked'); }
+
+// ---------- settings
+async function settings() {
+  const { data: staff } = await sb.from('staff').select('*').order('added_at');
+  $('#view').innerHTML = `<h2 style="font-size:30px;margin-bottom:10px">Settings</h2>
+    <div class="card"><div class="fld"><label>Bank details for deposit messages</label><textarea id="sBank" rows="3" placeholder="T-Insight Ltd · Sort code 00-00-00 · Account 00000000">${esc(bank())}</textarea></div><button class="btn g" id="sBankGo">Save</button></div>
+    <div class="card"><h3 style="font-size:22px;margin-bottom:8px">Stock</h3>${CAT.items.map(i => `<div class="row" style="padding:5px 0"><span>${esc(i.name)}</span><input type="number" min="0" value="${i.stock}" style="width:80px;border:1.5px solid var(--line);border-radius:8px;padding:6px" onchange="setStock('${i.code}',this.value)"></div>`).join('')}</div>
+    <div class="card"><h3 style="font-size:22px;margin-bottom:8px">Team</h3>${(staff || []).map(s => `<div class="row" style="padding:4px 0"><span>${esc(s.name)} <span class="muted">${esc(s.email)}</span></span><span class="muted">${s.can_override ? 'can override' : ''}</span></div>`).join('')}
+    ${ME.override ? `<div class="g2" style="margin-top:10px"><div class="fld"><input id="tName" placeholder="Name"></div><div class="fld"><input id="tEmail" placeholder="Email"></div></div><button class="btn g" id="tAdd">Add to team</button>` : ''}</div>`;
+  $('#sBankGo').onclick = async () => { const { error } = await sb.from('settings').upsert({ key: 'bank_details', value: $('#sBank').value }); if (error) return toast(error.message); await loadCat(); toast('Saved'); };
+  if ($('#tAdd')) $('#tAdd').onclick = async () => { const { error } = await sb.from('staff').insert({ name: $('#tName').value, email: $('#tEmail').value.trim().toLowerCase() }); if (error) return toast(error.message); toast('Added. They can now create a password.'); settings(); };
+}
+async function setStock(code, v) { const { error } = await sb.from('items').update({ stock: +v }).eq('code', code); if (error) return toast(error.message); await loadCat(); toast('Stock updated'); }
+
+sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_IN' && $('#app').classList.contains('hidden')) start(); });
+start().catch(fail);
+</script>
+</body>
+</html>
